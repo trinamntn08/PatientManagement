@@ -1,0 +1,453 @@
+<?php
+include './config/connection.php';
+include './common_service/common_functions.php';
+
+
+$message = '';
+if (isset($_POST['save_Patient'])) {
+
+    $patientName = trim($_POST['patient_name']);
+    $patientName = ucwords(strtolower($patientName));
+    $diachi = trim($_POST['diachi']);
+    $diachi = ucwords(strtolower($diachi));
+    $cmnd = trim($_POST['cmnd']);
+    $dateBirth = trim($_POST['date_of_birth']);
+    $dateArr = explode("/", $dateBirth);
+    $dateBirth = $dateArr[2].'-'.$dateArr[0].'-'.$dateArr[1];
+    $phoneNumber = trim($_POST['phone_number']);
+    $gender = $_POST['gender'];
+    $chandoan = $_POST['chandoan'];
+    $lamsang = $_POST['lamsang'];
+    $gan = $_POST['gan'];
+    $duongmat = $_POST['duongmat'];
+    $ongmatchu = $_POST['ongmatchu'];
+    $tuimat = $_POST['tuimat'];
+    $thantrai = $_POST['thantrai'];
+    $thanphai = $_POST['thanphai'];
+    $tuy = $_POST['tuy'];
+    $lach = $_POST['lach'];
+    $bangquang = $_POST['bangquang'];
+    $tuicung = $_POST['tuicung'];
+    $tucung = $_POST['tucung'];
+    $buongtrungtrai = $_POST['buongtrungtrai'];
+    $buongtrungphai = $_POST['buongtrungphai'];
+    $ghinhankhac = $_POST['ghinhankhac'];
+    $hinhanhsieuam = $_POST['hinhanhsieuam'];
+    $ketluan = $_POST['ketluan'];
+
+
+if ($patientName != '') {
+      $query = "INSERT INTO `patient_diagnostic`(`patient_name`, 
+    `diachi`, `cmnd`, `date_of_birth`, `phone_number`, `gender`,
+    `chandoan`, `lamsang`, `gan`, `duongmat`, `ongmatchu`,
+    `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
+    `bangquang`, `tuicung`, `tucung`, `buongtrungtrai`, `buongtrungphai`,
+    `ghinhankhac`, `hinhanhsieuam`, `ketluan`)
+VALUES('$patientName', '$diachi', '$cmnd', '$dateBirth','$phoneNumber', '$gender',
+       '$chandoan','$lamsang', '$gan', '$duongmat', '$ongmatchu','$tuimat', '$thantrai',
+       '$thanphai','$tuy', '$lach', '$bangquang', '$tuicung','$tucung', '$buongtrungtrai',
+       '$buongtrungphai','$ghinhankhac', '$hinhanhsieuam', '$ketluan');";
+try {
+
+  $con->beginTransaction();
+
+  $stmtPatient = $con->prepare($query);
+  $stmtPatient->execute();
+
+  $con->commit();
+
+  $message = 'Đã thêm bệnh nhân vào danh sách';
+
+} catch(PDOException $ex) {
+  $con->rollback();
+
+  echo $ex->getMessage();
+  echo $ex->getTraceAsString();
+  exit;
+}
+}
+  header("Location:congratulation.php?goto_page=patients.php&message=$message");
+  exit;
+}
+
+
+
+try {
+
+$query = "SELECT `id`, `patient_name`, `address`, 
+`cnic`, date_format(`date_of_birth`, '%d %b %Y') as `date_of_birth`, 
+`phone_number`, `gender` 
+FROM `patients` order by `patient_name` asc;";
+
+  $stmtPatient1 = $con->prepare($query);
+  $stmtPatient1->execute();
+
+} catch(PDOException $ex) {
+  echo $ex->getMessage();
+  echo $ex->getTraceAsString();
+  exit;
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <?php include './config/site_css_links.php';?>
+
+ <?php include './config/data_tables_css.php';?>
+
+  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <title>Patients - Clinic's Patient Management System in PHP</title>
+
+</head>
+<body class="hold-transition sidebar-mini dark-mode layout-fixed layout-navbar-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+  <!-- Navbar -->
+<?php include './config/header.php';
+include './config/sidebar.php';?>  
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Bệnh nhân</h1>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+     <div class="card card-outline card-primary rounded-0 shadow">
+        <div class="card-header">
+          <h3 class="card-title">Thêm bệnh nhân mới</h3>
+          
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            
+          </div>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            <div class="row">
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+              <label>Tên bệnh nhân</label>
+              <input type="text" id="patient_name" name="patient_name" required="required"
+                class="form-control form-control-sm rounded-0"/>
+              </div>
+              <br>
+              <br>
+              <br>
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <label>Địa chỉ</label> 
+                <input type="text" id="address" name="address" required="required"
+                class="form-control form-control-sm rounded-0"/>
+              </div>
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <label>CMND</label>
+                <input type="text" id="cnic" name="cnic" required="required"
+                class="form-control form-control-sm rounded-0"/>
+              </div>
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <div class="form-group">
+                  <label>Ngày sinh</label>
+                    <div class="input-group date" 
+                    id="date_of_birth" 
+                    data-target-input="nearest">
+                        <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" data-target="#date_of_birth" 
+                        name="date_of_birth" data-toggle="datetimepicker" autocomplete="off" />
+                        <div class="input-group-append" 
+                        data-target="#date_of_birth" 
+                        data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <div class="form-group">
+                  <label>Visit Date</label>
+                    <div class="input-group date" 
+                    id="visit_date" 
+                    data-target-input="nearest">
+                        <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" data-target="#visit_date" 
+                        name="visit_date" required="required" data-toggle="datetimepicker" autocomplete="off"/>
+                        <div class="input-group-append" 
+                        data-target="#visit_date" 
+                        data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <label>Số điện thoại</label>
+                <input type="text" id="phone_number" name="phone_number" required="required"
+                class="form-control form-control-sm rounded-0"/>
+              </div>
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+              <label>Giới tính </label>
+                <select class="form-control form-control-sm rounded-0" id="gender" 
+                name="gender">
+                  <?php echo getGender();?>
+                </select>
+              </div>
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <!-- FILL THE FORM FROM HERE -->
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">3. Chẩn đoán:</label>
+                <input id="chandoan" required="required" name="chandoan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">4. Lâm sàng:</label>
+                <input id="lamsang" required="required" name="lamsang" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">5. Gan:</label>
+                <input id="gan" required="required" name="gan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">6. Đường mật:</label>
+                <input id="duongmat" required="required" name="duongmat" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">7. Ống mật chủ:</label>
+                <input id="ongmatchu" required="required" name="ongmatchu" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">8. Túi mật:</label>
+                <input id="tuimat" required="required" name="tuimat" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">9. Thận trái:</label>
+                <input id="thantrai" required="required" name="thantrai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">Thận phải:</label>
+                <input id="thanphai" required="required" name="thanphai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">10. Tụy:</label>
+                <input id="tuy" required="required" name="tuy" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">11. Lách:</label>
+                <input id="lach" required="required" name="lach" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">12. Bàng quang:</label>
+                <input id="bangquang" required="required" name="bangquang" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">13. Túi cùng:</label>
+                <input id="tuicung" required="required" name="tuicung" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">14. Tử cung:</label>
+                <input id="tucung" required="required" name="tucung" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">15. Buồng trứng trái:</label>
+                <input id="buongtrungtrai" required="required" name="buongtrungtrai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">Buồng trứng phải:</label>
+                <input id="buongtrungphai" required="required" name="buongtrungphai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">Ghi nhận khác:</label>
+                <input id="ghinhankhac" required="required" name="ghinhankhac" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">HÌNH ẢNH SIÊU ÂM:</label>
+                <input id="hinhanhsieuam" required="required" name="hinhanhsieuam" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <label style="display: inline-block; margin-right: 10px;">KẾT LUẬN:</label>
+                <input id="ketluan" required="required" name="ketluan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+              </div>
+              <div class="clearfix">&nbsp;</div>
+            </div>
+
+
+
+
+              <div class="row">
+                <div class="col-lg-11 col-md-10 col-sm-10 xs-hidden">&nbsp;</div>
+
+              <div class="col-lg-1 col-md-2 col-sm-2 col-xs-12">
+                <button type="submit" id="save_Patient" 
+                name="save_Patient" class="btn btn-primary btn-sm btn-flat btn-block">Lưu</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        
+      </div>
+      
+    </section>
+
+     <br/>
+     <br/>
+     <br/>
+
+ <section class="content">
+      <!-- Default box -->
+      <div class="card card-outline card-primary rounded-0 shadow">
+        <div class="card-header">
+          <h3 class="card-title">Danh sách bệnh nhân</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            
+          </div>
+        </div>
+        <div class="card-body">
+            <div class="row table-responsive">
+              <table id="all_patients" 
+              class="table table-striped dataTable table-bordered dtr-inline" 
+               role="grid" aria-describedby="all_patients_info">
+              
+                <thead>
+                  <tr>
+                    <th>Stt</th>
+                    <th>Tên bệnh nhân</th>
+                    <th>Địa chỉ</th>
+                    <th>CMND</th>
+                    <th>Ngày sinh</th>
+                    <th>Số điện thoại</th>
+                    <th>Giới tính</th>
+                    <th>Chi tiết</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <?php 
+                  $count = 0;
+                  while($row =$stmtPatient1->fetch(PDO::FETCH_ASSOC)){
+                    $count++;
+                  ?>
+                  <tr>
+                    <td><?php echo $count; ?></td>
+                    <td><?php echo $row['patient_name'];?></td>
+                    <td><?php echo $row['address'];?></td>
+                    <td><?php echo $row['cnic'];?></td>
+                    <td><?php echo $row['date_of_birth'];?></td>
+                    <td><?php echo $row['phone_number'];?></td>
+                    <td><?php echo $row['gender'];?></td>
+                    <td>
+                      <a href="update_patient.php?id=<?php echo $row['id'];?>" class = "btn btn-primary btn-sm btn-flat">
+                      <i class="fa fa-edit"></i>
+                      </a>
+                    </td>
+                   
+                  </tr>
+                <?php
+                }
+                ?>
+                </tbody>
+              </table>
+            </div>
+        </div>
+     
+        <!-- /.card-footer-->
+      </div>
+      <!-- /.card -->
+
+   
+    </section>
+  </div>
+    <!-- /.content -->
+  
+  <!-- /.content-wrapper -->
+<?php 
+ include './config/footer.php';
+
+  $message = '';
+  if(isset($_GET['message'])) {
+    $message = $_GET['message'];
+  }
+?>  
+  <!-- /.control-sidebar -->
+
+
+<?php include './config/site_js_links.php'; ?>
+<?php include './config/data_tables_js.php'; ?>
+
+
+<script src="plugins/moment/moment.min.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
+<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<script>
+  showMenuSelected("#mnu_patients", "#mi_list_patients");
+
+  var message = '<?php echo $message;?>';
+
+  if(message !== '') {
+    showCustomMessage(message);
+  }
+  $('#date_of_birth').datetimepicker({
+        format: 'L'
+    });
+      
+    
+   $(function () {
+    $("#all_patients").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#all_patients_wrapper .col-md-6:eq(0)');
+    
+  });
+
+   
+</script>
+</body>
+</html>

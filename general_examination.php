@@ -189,17 +189,6 @@ include './config/sidebar.php';?>
         <input id="disease" required="required" name="disease" class="form-control form-control-sm rounded-0" />
       </div>
 
-      <div class="clearfix">&nbsp;</div>
-      
-      <div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
-        <label>Weight</label>
-        <input id="weight" name="weight" class="form-control form-control-sm rounded-0" required="required" />
-      </div>
-
-      <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
-        <label>Disease</label>
-        <input id="disease" required="required" name="disease" class="form-control form-control-sm rounded-0" />
-      </div>
 
     </div>
 

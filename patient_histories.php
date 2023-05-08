@@ -68,22 +68,16 @@ include './config/sidebar.php';?>
                 <table id="patient_history" class="table table-striped table-bordered">
                   <colgroup>
                     <col width="10%">
-                    <col width="15%">
-                    <col width="15%">
-                    <col width="40%">
-                    <col width="10%">
-                    <col width="10%">
-                    <col width="10%">
+                    <col width="20%">
+                    <col width="20%">
+                    <col width="50%">
                   </colgroup>
                   <thead>
                     <tr class="bg-gradient-primary text-light">
                       <th class="p-1 text-center">S.No</th>
                       <th class="p-1 text-center">Visit Date</th>
                       <th class="p-1 text-center">Disease</th>
-                      <th class="p-1 text-center">Medicine</th>
-                      <th class="p-1 text-center">Packing</th>
-                      <th class="p-1 text-center">QTY</th>
-                      <th class="p-1 text-center">Dosage</th>
+                      <th class="p-1 text-center">Chi tiết</th>
                     </tr>
                   </thead>
 
@@ -112,7 +106,7 @@ include './config/sidebar.php';?>
 <?php include './config/site_js_links.php' ?>
 
 <script>
-  showMenuSelected("#mnu_patients", "#mi_patient_history");
+  showMenuSelected("#mnu_patients", "#mi_patient_histories");
 
   $(document).ready(function() {
 

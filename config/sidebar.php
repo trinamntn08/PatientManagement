@@ -40,7 +40,7 @@ if(!(isset($_SESSION['user_id']))) {
 
           
           <li class="nav-item" id="mnu_patients">
-            <a href="#" class="nav-link">
+            <a href="patient_history.php" class="nav-link">
               <i class="nav-icon fas fa-user-injured"></i>
               <p>
                 <i class="fas "></i>
@@ -70,12 +70,29 @@ if(!(isset($_SESSION['user_id']))) {
                   <p>Lịch sử thăm khám</p>
                 </a>
               </li>
-              
+              <li class="nav-item">
+                <a href="list_patients.php" class="nav-link" 
+                id="mi_list_patients">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Danh sách bệnh nhân</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="diagnostic_examen.php" class="nav-link" 
+                id="mi_diagnostic_examen">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Chẩn đoán</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="patient_histories.php" class="nav-link" 
+                id="mi_patient_histories">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lịch sử thăm khám</p>
+                </a>
+              </li>
             </ul>
           </li>
-
-
-
           <li class="nav-item" id="mnu_medicines">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-pills"></i>
