@@ -74,7 +74,7 @@ if(!(isset($_SESSION['user_id']))) {
                 <a href="list_patients.php" class="nav-link" 
                 id="mi_list_patients">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Danh sách bệnh nhân</p>
+                  <p>Thêm bệnh nhân + Chẩn đoán</p>
                 </a>
               </li>
               <li class="nav-item">

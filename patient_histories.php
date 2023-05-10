@@ -34,11 +34,10 @@ include './config/sidebar.php';?>
 
     <!-- Main content -->
     <section class="content">
-
       <!-- Default box -->
       <div class="card card-outline card-primary rounded-0 shadow">
         <div class="card-header">
-          <h3 class="card-title">Search Patient History</h3>
+          <h3 class="card-title">Lịch sử bệnh nhân thăm khám</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">

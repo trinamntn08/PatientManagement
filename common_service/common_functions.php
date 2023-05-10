@@ -86,6 +86,28 @@ from `patients` order by `patient_name` asc;";
 	return $data;
 }
 
+function getPatientVisits($con) {
+	$query = "select `id`, `patient_name`, `phone_number` 
+	from `patients` order by `patient_name` asc;";
+	
+		$stmt = $con->prepare($query);
+		try {
+			$stmt->execute();
+	
+		} catch(PDOException $ex) {
+			echo $ex->getTraceAsString();
+			echo $ex->getMessage();
+			exit;
+		}
+	
+		$data = '<option value="">Select Patient</option>';
+	
+		while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$data = $data.'<option value="'.$row['id'].'">'.$row['patient_name'].' ('.$row['phone_number'].')'.'</option>';
+		}
+	
+		return $data;
+	}
 
 function getDateTextBox($label, $dateId) {
 

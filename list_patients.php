@@ -6,6 +6,19 @@ include './common_service/common_functions.php';
 $message = '';
 if (isset($_POST['save_Patient'])) {
 
+      // Get the uploaded image file
+      $hinhanhsieuam = '';
+      if (isset($_FILES['hinhanhsieuam']) && $_FILES['hinhanhsieuam']['error'] === UPLOAD_ERR_OK) {
+          $hinhanhsieuam = file_get_contents($_FILES['hinhanhsieuam']['tmp_name']);
+      }
+      else
+      {
+                // No image was uploaded, set the image data to NULL
+                $hinhanhsieuam = NULL;
+      }
+
+      
+
     $patientName = trim($_POST['patient_name']);
     $patientName = ucwords(strtolower($patientName));
     $diachi = trim($_POST['diachi']);
@@ -32,12 +45,12 @@ if (isset($_POST['save_Patient'])) {
     $buongtrungtrai = $_POST['buongtrungtrai'];
     $buongtrungphai = $_POST['buongtrungphai'];
     $ghinhankhac = $_POST['ghinhankhac'];
-    $hinhanhsieuam = $_POST['hinhanhsieuam'];
+    //$hinhanhsieuam = $target_file;
     $ketluan = $_POST['ketluan'];
 
 
 if ($patientName != '') {
-      $query = "INSERT INTO `patient_diagnostic`(`patient_name`, 
+      $query = "INSERT INTO `patient_examen`(`patient_name`, 
     `diachi`, `cmnd`, `date_of_birth`, `phone_number`, `gender`,
     `chandoan`, `lamsang`, `gan`, `duongmat`, `ongmatchu`,
     `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
@@ -74,10 +87,10 @@ try {
 
 try {
 
-$query = "SELECT `id`, `patient_name`, `address`, 
-`cnic`, date_format(`date_of_birth`, '%d %b %Y') as `date_of_birth`, 
+$query = "SELECT `id`, `patient_name`, `diachi`, 
+`cmnd`, date_format(`date_of_birth`, '%d %b %Y') as `date_of_birth`, 
 `phone_number`, `gender` 
-FROM `patients` order by `patient_name` asc;";
+FROM `patient_examen` order by `patient_name` asc;";
 
   $stmtPatient1 = $con->prepare($query);
   $stmtPatient1->execute();
@@ -201,7 +214,6 @@ include './config/sidebar.php';?>
                   <?php echo getGender();?>
                 </select>
               </div>
-              </div>
               <div class="clearfix">&nbsp;</div>
 
               <!-- FILL THE FORM FROM HERE -->
@@ -303,7 +315,10 @@ include './config/sidebar.php';?>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">HÌNH ẢNH SIÊU ÂM:</label>
-                <input id="hinhanhsieuam" required="required" name="hinhanhsieuam" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="hinhanhsieuam" type="file" name="hinhanhsieuam" accept="image/*" 
+                class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" onchange="previewImage();" />
+                <br />
+                <img id="preview" src="#" alt="Preview Image" style="max-width: 400px; margin-top: 10px; display: none;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
@@ -313,9 +328,6 @@ include './config/sidebar.php';?>
               </div>
               <div class="clearfix">&nbsp;</div>
             </div>
-
-
-
 
               <div class="row">
                 <div class="col-lg-11 col-md-10 col-sm-10 xs-hidden">&nbsp;</div>
@@ -377,13 +389,13 @@ include './config/sidebar.php';?>
                   <tr>
                     <td><?php echo $count; ?></td>
                     <td><?php echo $row['patient_name'];?></td>
-                    <td><?php echo $row['address'];?></td>
-                    <td><?php echo $row['cnic'];?></td>
+                    <td><?php echo $row['diachi'];?></td>
+                    <td><?php echo $row['cmnd'];?></td>
                     <td><?php echo $row['date_of_birth'];?></td>
                     <td><?php echo $row['phone_number'];?></td>
                     <td><?php echo $row['gender'];?></td>
                     <td>
-                      <a href="update_patient.php?id=<?php echo $row['id'];?>" class = "btn btn-primary btn-sm btn-flat">
+                      <a href="patient_detail.php?id=<?php echo $row['id'];?>" class = "btn btn-primary btn-sm btn-flat">
                       <i class="fa fa-edit"></i>
                       </a>
                     </td>
@@ -446,8 +458,28 @@ include './config/sidebar.php';?>
     }).buttons().container().appendTo('#all_patients_wrapper .col-md-6:eq(0)');
     
   });
-
-   
 </script>
+
+<script>
+function previewImage() {
+  var preview = document.getElementById('preview');
+  var file    = document.getElementById('hinhanhsieuam').files[0];
+  var reader  = new FileReader();
+
+  reader.onloadend = function () {
+    preview.src = reader.result;
+    preview.style.display = 'block';
+  }
+
+  if (file) {
+    reader.readAsDataURL(file);
+  } else {
+    preview.src = '';
+    preview.style.display = 'none';
+  }
+}
+</script>
+
+
 </body>
 </html>
