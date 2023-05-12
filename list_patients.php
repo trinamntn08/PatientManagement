@@ -6,19 +6,6 @@ include './common_service/common_functions.php';
 $message = '';
 if (isset($_POST['save_Patient'])) {
 
-      // Get the uploaded image file
-      $hinhanhsieuam = '';
-      if (isset($_FILES['hinhanhsieuam']) && $_FILES['hinhanhsieuam']['error'] === UPLOAD_ERR_OK) {
-          $hinhanhsieuam = file_get_contents($_FILES['hinhanhsieuam']['tmp_name']);
-      }
-      else
-      {
-                // No image was uploaded, set the image data to NULL
-                $hinhanhsieuam = NULL;
-      }
-
-      
-
     $patientName = trim($_POST['patient_name']);
     $patientName = ucwords(strtolower($patientName));
     $diachi = trim($_POST['diachi']);
@@ -45,41 +32,52 @@ if (isset($_POST['save_Patient'])) {
     $buongtrungtrai = $_POST['buongtrungtrai'];
     $buongtrungphai = $_POST['buongtrungphai'];
     $ghinhankhac = $_POST['ghinhankhac'];
-    //$hinhanhsieuam = $target_file;
     $ketluan = $_POST['ketluan'];
 
 
-if ($patientName != '') {
-      $query = "INSERT INTO `patient_examen`(`patient_name`, 
-    `diachi`, `cmnd`, `date_of_birth`, `phone_number`, `gender`,
-    `chandoan`, `lamsang`, `gan`, `duongmat`, `ongmatchu`,
-    `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
-    `bangquang`, `tuicung`, `tucung`, `buongtrungtrai`, `buongtrungphai`,
-    `ghinhankhac`, `hinhanhsieuam`, `ketluan`)
-VALUES('$patientName', '$diachi', '$cmnd', '$dateBirth','$phoneNumber', '$gender',
-       '$chandoan','$lamsang', '$gan', '$duongmat', '$ongmatchu','$tuimat', '$thantrai',
-       '$thanphai','$tuy', '$lach', '$bangquang', '$tuicung','$tucung', '$buongtrungtrai',
-       '$buongtrungphai','$ghinhankhac', '$hinhanhsieuam', '$ketluan');";
-try {
+    // Store image data into a local folder
+    $baseName = basename($_FILES["hinhanhsieuam"]["name"]);
+    $targetFile =  time().$baseName;
+    $status = move_uploaded_file($_FILES["hinhanhsieuam"]["tmp_name"], 'anhsieuam/'.$targetFile);
+    $hinhanhsieuam = $targetFile;
+    if($status) {
+      
+      try {
 
-  $con->beginTransaction();
+        $con->beginTransaction();
 
-  $stmtPatient = $con->prepare($query);
-  $stmtPatient->execute();
+        $query = "INSERT INTO `patient_examen`(`patient_name`, 
+        `diachi`, `cmnd`, `date_of_birth`, `phone_number`, `gender`,
+        `chandoan`, `lamsang`, `gan`, `duongmat`, `ongmatchu`,
+        `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
+        `bangquang`, `tuicung`, `tucung`, `buongtrungtrai`, `buongtrungphai`,
+        `ghinhankhac`, `hinhanhsieuam`, `ketluan`)
+          VALUES('$patientName', '$diachi', '$cmnd', '$dateBirth','$phoneNumber', '$gender',
+                '$chandoan','$lamsang', '$gan', '$duongmat', '$ongmatchu','$tuimat', '$thantrai',
+                '$thanphai','$tuy', '$lach', '$bangquang', '$tuicung','$tucung', '$buongtrungtrai',
+                '$buongtrungphai','$ghinhankhac', '$hinhanhsieuam', '$ketluan');";
 
-  $con->commit();
+        $stmtPatient = $con->prepare($query);
+        $stmtPatient->execute();
 
-  $message = 'Đã thêm bệnh nhân vào danh sách';
+        $con->commit();
 
-} catch(PDOException $ex) {
-  $con->rollback();
+        $message = 'Đã thêm bệnh nhân vào danh sách';
 
-  echo $ex->getMessage();
-  echo $ex->getTraceAsString();
-  exit;
-}
-}
-  header("Location:congratulation.php?goto_page=patients.php&message=$message");
+      } catch(PDOException $ex) {
+        $con->rollback();
+
+        echo $ex->getMessage();
+        echo $ex->getTraceAsString();
+        exit;
+      }
+    } 
+    else {
+      $message = 'a problem occured in image uploading.';
+    }
+
+//  header("Location:congratulation.php?goto_page=patients.php&message=$message");
+  header("Location:congratulation.php?goto_page=list_patients.php&message=$message");
   exit;
 }
 
@@ -148,7 +146,7 @@ include './config/sidebar.php';?>
           </div>
         </div>
         <div class="card-body">
-          <form method="post">
+          <form method="post" enctype="multipart/form-data" >
             <div class="row">
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
               <label>Tên bệnh nhân</label>
@@ -160,12 +158,12 @@ include './config/sidebar.php';?>
               <br>
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>Địa chỉ</label> 
-                <input type="text" id="address" name="address" required="required"
+                <input type="text" id="diachi" name="diachi" 
                 class="form-control form-control-sm rounded-0"/>
               </div>
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>CMND</label>
-                <input type="text" id="cnic" name="cnic" required="required"
+                <input type="text" id="cmnd" name="cmnd" 
                 class="form-control form-control-sm rounded-0"/>
               </div>
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
@@ -187,12 +185,12 @@ include './config/sidebar.php';?>
               
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <div class="form-group">
-                  <label>Visit Date</label>
+                  <label>Ngày khám</label>
                     <div class="input-group date" 
                     id="visit_date" 
                     data-target-input="nearest">
                         <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" data-target="#visit_date" 
-                        name="visit_date" required="required" data-toggle="datetimepicker" autocomplete="off"/>
+                        name="visit_date"  data-toggle="datetimepicker" autocomplete="off"/>
                         <div class="input-group-append" 
                         data-target="#visit_date" 
                         data-toggle="datetimepicker">
@@ -204,7 +202,7 @@ include './config/sidebar.php';?>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>Số điện thoại</label>
-                <input type="text" id="phone_number" name="phone_number" required="required"
+                <input type="text" id="phone_number" name="phone_number"
                 class="form-control form-control-sm rounded-0"/>
               </div>
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
@@ -219,97 +217,97 @@ include './config/sidebar.php';?>
               <!-- FILL THE FORM FROM HERE -->
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">3. Chẩn đoán:</label>
-                <input id="chandoan" required="required" name="chandoan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="chandoan"  name="chandoan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">4. Lâm sàng:</label>
-                <input id="lamsang" required="required" name="lamsang" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="lamsang"  name="lamsang" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">5. Gan:</label>
-                <input id="gan" required="required" name="gan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="gan"name="gan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">6. Đường mật:</label>
-                <input id="duongmat" required="required" name="duongmat" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="duongmat"  name="duongmat" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">7. Ống mật chủ:</label>
-                <input id="ongmatchu" required="required" name="ongmatchu" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="ongmatchu"  name="ongmatchu" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">8. Túi mật:</label>
-                <input id="tuimat" required="required" name="tuimat" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="tuimat"  name="tuimat" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">9. Thận trái:</label>
-                <input id="thantrai" required="required" name="thantrai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="thantrai"  name="thantrai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">Thận phải:</label>
-                <input id="thanphai" required="required" name="thanphai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="thanphai"  name="thanphai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">10. Tụy:</label>
-                <input id="tuy" required="required" name="tuy" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="tuy" name="tuy" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">11. Lách:</label>
-                <input id="lach" required="required" name="lach" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="lach" name="lach" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">12. Bàng quang:</label>
-                <input id="bangquang" required="required" name="bangquang" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="bangquang" name="bangquang" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">13. Túi cùng:</label>
-                <input id="tuicung" required="required" name="tuicung" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="tuicung" name="tuicung" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">14. Tử cung:</label>
-                <input id="tucung" required="required" name="tucung" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="tucung" name="tucung" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">15. Buồng trứng trái:</label>
-                <input id="buongtrungtrai" required="required" name="buongtrungtrai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="buongtrungtrai" name="buongtrungtrai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">Buồng trứng phải:</label>
-                <input id="buongtrungphai" required="required" name="buongtrungphai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="buongtrungphai"  name="buongtrungphai" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">Ghi nhận khác:</label>
-                <input id="ghinhankhac" required="required" name="ghinhankhac" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="ghinhankhac"  name="ghinhankhac" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
 
@@ -324,7 +322,7 @@ include './config/sidebar.php';?>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">KẾT LUẬN:</label>
-                <input id="ketluan" required="required" name="ketluan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
+                <input id="ketluan"  name="ketluan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
             </div>

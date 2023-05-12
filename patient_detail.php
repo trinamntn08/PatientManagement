@@ -22,17 +22,17 @@ if (isset($_POST['save_Patient'])) {
     $address = ucwords(strtolower($address));
 
     $gender = $_POST['gender'];
-if ($patientName != '' && $address != '' && 
-  $cnic != '' && $dateBirth != '' && $phoneNumber != '' && $gender != '') {
-      $query = "update `patients` 
-    set `patient_name` = '$patientName', 
-    `address` = '$address', 
-    `cnic` = '$cnic', 
-    `date_of_birth` = '$dateBirth', 
-    `phone_number` = '$phoneNumber', 
-    `gender` = '$gender' 
-where `id` = $hiddenId;";
-try {
+    if ($patientName != '' && $address != '' && 
+        $cnic != '' && $dateBirth != '' && $phoneNumber != '' && $gender != '') {
+          $query = "update `patients` 
+        set `patient_name` = '$patientName', 
+        `address` = '$address', 
+        `cnic` = '$cnic', 
+        `date_of_birth` = '$dateBirth', 
+        `phone_number` = '$phoneNumber', 
+        `gender` = '$gender' 
+        where `id` = $hiddenId;";
+    try {
 
   $con->beginTransaction();
 
@@ -61,7 +61,7 @@ try {
 $id = $_GET['id'];
 $query = "SELECT `id`, `patient_name`, `diachi`, 
 `cmnd`, date_format(`date_of_birth`, '%m/%d/%Y') as `date_of_birth`,  `phone_number`, `gender` ,
-`visit_date`, `weight`, `patient_diagnostic_id`, `diachi`, `chandoan`, `lamsang`, `gan`,
+`visit_date`, `weight`, `patient_diagnostic_id`, `chandoan`, `lamsang`, `gan`,
 								  `duongmat`, `ongmatchu`, `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
 								  `bangquang`, `tuicung`, `tucung`, `buongtrungtrai`, `buongtrungphai`, `ghinhankhac`, `hinhanhsieuam`,
 								  `ketluan`
@@ -131,7 +131,7 @@ include './config/sidebar.php';?>
             value="<?php echo $row['id'];?>">
             <div class="row">
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-              <label>Patient Name</label>
+              <label>Tên bệnh nhân</label>
               <input type="text" id="patient_name" name="patient_name" required="required"
                 class="form-control form-control-sm rounded-0" value="<?php echo $row['patient_name'];?>" />
               </div>
@@ -140,7 +140,7 @@ include './config/sidebar.php';?>
               <br>
               <!-- $Address -->
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                <label>diachi</label> 
+                <label>Địa chỉ</label> 
                 <input type="text" id="diachi" name="diachi" required="required"
                 class="form-control form-control-sm rounded-0" value="<?php echo $row['diachi'];?>" />
               </div>
@@ -153,7 +153,7 @@ include './config/sidebar.php';?>
               <!-- $date_of_birth -->
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <div class="form-group">
-                  <label>Date of Birth</label>
+                  <label>Ngày sinh</label>
                     <div class="input-group date" 
                     id="date_of_birth" 
                     data-target-input="nearest">
@@ -169,13 +169,13 @@ include './config/sidebar.php';?>
               </div>
               <!-- $PhoneNumber -->
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                <label>Phone Number</label>
+                <label>Số điện thoại</label>
                 <input type="text" id="phone_number" name="phone_number" required="required"
                 class="form-control form-control-sm rounded-0" value="<?php echo $row['phone_number'];?>" />
               </div>
               <!-- $gender -->
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                <label>Gender</label>
+                <label>Giới tính</label>
                   <select class="form-control form-control-sm rounded-0" id="gender" 
                     name="gender">
                   <?php echo getGender($gender);?>
@@ -302,13 +302,7 @@ include './config/sidebar.php';?>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">HÌNH ẢNH SIÊU ÂM:</label>
-                <?php
-                  if ($row['hinhanhsieuam']) {
-                      echo '<img src="data:image/jpg;base64,'.base64_encode($row['hinhanhsieuam']).'" style="max-width: 400px; margin-top: 10px;" />';
-                  } else {
-                      echo '<p>No image available</p>';
-                  }
-              ?>  
+                <img src="anhsieuam/<?php echo $row['hinhanhsieuam'];?>">
               </div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
