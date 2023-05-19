@@ -38,7 +38,30 @@ if(!(isset($_SESSION['user_id']))) {
             </a>
           </li>
 
-          
+          <li class="nav-item">
+              <a href="add_patient.php" class="nav-link" 
+                id="mi_add_patient">
+                <i class="nav-icon fas fa-user-injured"></i>
+                <p>Thêm bệnh nhân mới</p>
+              </a>
+          </li>
+
+          <li class="nav-item">
+              <a href="list_patients.php" class="nav-link" 
+                id="mi_list_patients">
+                <i class="nav-icon fas fa-user-injured"></i>
+                <p>Danh sách bệnh nhân</p>
+              </a>
+          </li>
+
+          <li class="nav-item">
+              <a href="patient_histories.php" class="nav-link" 
+                id="mi_patient_histories">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lịch sử thăm khám</p>
+              </a>
+          </li>
+
           <li class="nav-item" id="mnu_patients">
             <a href="patient_history.php" class="nav-link">
               <i class="nav-icon fas fa-user-injured"></i>
@@ -139,7 +162,6 @@ if(!(isset($_SESSION['user_id']))) {
               
             </ul>
           </li> 
-
           <li class="nav-item" id="mnu_users">
             <a href="users.php" class="nav-link">
               <i class="nav-icon fa fa-users"></i>
@@ -148,6 +170,7 @@ if(!(isset($_SESSION['user_id']))) {
               </p>
             </a>
           </li>
+          
 
           <li class="nav-item">
             <a href="logout.php" class="nav-link">
@@ -157,7 +180,7 @@ if(!(isset($_SESSION['user_id']))) {
               </p>
             </a>
           </li>
-
+          
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

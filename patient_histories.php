@@ -2,8 +2,8 @@
 include './config/connection.php';
 include './common_service/common_functions.php';
 
-$patients = getPatients($con);
-
+//$patients = getPatients($con);
+$patients =  getPatientHistory($con);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -74,8 +74,8 @@ include './config/sidebar.php';?>
                   <thead>
                     <tr class="bg-gradient-primary text-light">
                       <th class="p-1 text-center">S.No</th>
-                      <th class="p-1 text-center">Visit Date</th>
-                      <th class="p-1 text-center">Disease</th>
+                      <th class="p-1 text-center">Ngày khám</th>
+                      <th class="p-1 text-center">Địa chỉ</th>
                       <th class="p-1 text-center">Chi tiết</th>
                     </tr>
                   </thead>
@@ -115,7 +115,7 @@ include './config/sidebar.php';?>
       if(patientId !== '') {
 
         $.ajax({
-          url: "ajax/get_patient_history.php",
+          url: "ajax/get_patient_histories.php",
           type: 'GET', 
           data: {
             'patient_id': patientId

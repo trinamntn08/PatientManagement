@@ -12,10 +12,10 @@ function getGender222() {
 	return $data;
 }
 */
-function getGender($gender = '') {
-	$data = '<option value="">Select Gender</option>';
+function getGender($gender = 'Nam') {
+//	$data = '<option value="">Giới tính</option>';
 	
-	$arr = array("Male", "Female", "Other");
+	$arr = array("Nam", "Nữ", "Khác");
 
 	$i = 0;
 	$size = sizeof($arr);
@@ -85,6 +85,38 @@ from `patients` order by `patient_name` asc;";
 
 	return $data;
 }
+
+function getPatientHistory($con) {
+	$query = "Select `patient_name`,`id`,  `diachi`, 
+	`cmnd`, date_format(`visit_date`, '%d %b %Y') as `visit_date`, 
+	`phone_number`, `gender` , `tuoi`  
+	from `patient_examen` order by `patient_name` asc;";
+	
+		$stmt = $con->prepare($query);
+		try {
+			$stmt->execute();
+	
+		} catch(PDOException $ex) {
+			echo $ex->getTraceAsString();
+			echo $ex->getMessage();
+			exit;
+		}
+	
+		$data = '<option value="">Select Patient</option>';
+	
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$diachi = isset($row['diachi']) ? $row['diachi'] : ''; 
+			$cmnd = isset($row['cmnd']) ? $row['cmnd'] : ''; 
+			$phone_number = isset($row['phone_number']) ? $row['phone_number'] : ''; 
+			$gender = isset($row['gender']) ? $row['gender'] : ''; 
+			$tuoi = isset($row['tuoi']) ? $row['tuoi'] : ''; 
+			$data .= '<option value="' . $row['patient_name'] . '"diachi="' . $diachi . 
+										'"cmnd="' . $cmnd . '"phone_number="' . $phone_number . 
+										'"gender="' . $gender . '"tuoi="' . $tuoi .'">' . $row['patient_name'] . '</option>';
+		  }
+	
+		return $data;
+	}
 
 function getPatientVisits($con) {
 	$query = "select `id`, `patient_name`, `phone_number` 

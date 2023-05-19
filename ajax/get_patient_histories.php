@@ -10,7 +10,7 @@
     patient_visits (visit_date, disease)
     patient_medication_history (quantity, dosage)
 
-    */
+   
     $query = "SELECT `m`.`medicine_name`, `md`.`packing`, 
     `pv`.`visit_date`, `pv`.`disease`, `pmh`.`quantity`, `pmh`.`dosage` 
     from `medicines` as `m`, `medicine_details` as `md`, 
@@ -20,6 +20,15 @@
     `pv`.`id` = `pmh`.`patient_visit_id` and 
     `md`.`id` = `pmh`.`medicine_details_id` 
     order by `pv`.`id` asc, `pmh`.`id` asc;";
+ */
+
+    $query = "SELECT `id`, `patient_name`, `diachi`, 
+    `cmnd`, date_format(`visit_date`, '%d %b %Y') as `visit_date`, 
+    `phone_number`, `gender`  
+    from `patient_examen` 
+    where `id` =$patientId
+    order by `patient_name` asc;";
+
 
     try {
       $stmt = $con->prepare($query);
@@ -32,12 +41,8 @@
         
         $data = $data.'<td class="px-2 py-1 align-middle text-center">'.$i.'</td>';
         $data = $data.'<td class="px-2 py-1 align-middle">'.date("M d, Y", strtotime($r['visit_date'])).'</td>';
-        $data = $data.'<td class="px-2 py-1 align-middle">'.$r['disease'].'</td>';
-        $data = $data.'<td class="px-2 py-1 align-middle">'.$r['medicine_name'].'</td>';
-        $data = $data.'<td class="px-2 py-1 align-middle text-right">'.$r['packing'].'</td>';
-        $data = $data.'<td class="px-2 py-1 align-middle text-right">'.$r['quantity'].'</td>';
-        $data = $data.'<td class="px-2 py-1 align-middle text-right">'.$r['dosage'].'</td>';
-
+        $data = $data.'<td class="px-2 py-1 align-middle">'.$r['diachi'].'</td>';
+        $data = $data.'<td class="px-2 py-1 align-middle">'.$r['cmnd'].'</td>';
         $data = $data.'</tr>';
       }
 

@@ -2,7 +2,7 @@
 include './config/connection.php';
 include './common_service/common_functions.php';
 
-
+// This function to save a new patient examen
 $message = '';
 if (isset($_POST['save_Patient'])) {
 
@@ -12,11 +12,11 @@ if (isset($_POST['save_Patient'])) {
     $diachi = ucwords(strtolower($diachi));
     $cmnd = trim($_POST['cmnd']);
     $tuoi = trim($_POST['tuoi']);
-
+    
     $visit_date = trim($_POST['visit_date']);
     $dateArr = explode("/", $visit_date);
     $visit_date = $dateArr[2].'-'.$dateArr[0].'-'.$dateArr[1];
-
+  
     $phoneNumber = trim($_POST['phone_number']);
     $gender = $_POST['gender'];
     $chandoan = $_POST['chandoan'];
@@ -43,51 +43,42 @@ if (isset($_POST['save_Patient'])) {
     $targetFile =  time().$baseName;
     $status = move_uploaded_file($_FILES["hinhanhsieuam"]["tmp_name"], 'anhsieuam/'.$targetFile);
     $hinhanhsieuam = $targetFile;
-    if($status) {
-      
-      try {
+    try {
 
-        $con->beginTransaction();
+      $con->beginTransaction();
 
-        $query = "INSERT INTO `patient_examen`(`patient_name`, 
-        `diachi`, `cmnd`,`tuoi`, `visit_date`, `phone_number`, `gender`,
-        `chandoan`, `lamsang`, `gan`, `duongmat`, `ongmatchu`,
-        `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
-        `bangquang`, `tuicung`, `tucung`, `buongtrungtrai`, `buongtrungphai`,
-        `ghinhankhac`, `hinhanhsieuam`, `ketluan`)
-          VALUES('$patientName', '$diachi', '$cmnd', '$tuoi','$visit_date','$phoneNumber', '$gender',
-                '$chandoan','$lamsang', '$gan', '$duongmat', '$ongmatchu','$tuimat', '$thantrai',
-                '$thanphai','$tuy', '$lach', '$bangquang', '$tuicung','$tucung', '$buongtrungtrai',
-                '$buongtrungphai','$ghinhankhac', '$hinhanhsieuam', '$ketluan');";
+      $query = "INSERT INTO `patient_examen`(`patient_name`, 
+      `diachi`, `cmnd`,`tuoi`,  `visit_date`,`phone_number`, `gender`,
+      `chandoan`, `lamsang`, `gan`, `duongmat`, `ongmatchu`,
+      `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
+      `bangquang`, `tuicung`, `tucung`, `buongtrungtrai`, `buongtrungphai`,
+      `ghinhankhac`, `hinhanhsieuam`, `ketluan`)
+        VALUES('$patientName', '$diachi', '$cmnd','$tuoi',  '$visit_date','$phoneNumber', '$gender',
+              '$chandoan','$lamsang', '$gan', '$duongmat', '$ongmatchu','$tuimat', '$thantrai',
+              '$thanphai','$tuy', '$lach', '$bangquang', '$tuicung','$tucung', '$buongtrungtrai',
+              '$buongtrungphai','$ghinhankhac', '$hinhanhsieuam', '$ketluan');";
 
-        $stmtPatient = $con->prepare($query);
-        $stmtPatient->execute();
+      $stmtPatient = $con->prepare($query);
+      $stmtPatient->execute();
 
-        $con->commit();
+      $con->commit();
 
-        $message = 'Đã thêm bệnh nhân vào danh sách';
+      $message = 'Đã thêm bệnh nhân vào danh sách';
 
-      } catch(PDOException $ex) {
-        $con->rollback();
+    } catch(PDOException $ex) {
+      $con->rollback();
 
-        echo $ex->getMessage();
-        echo $ex->getTraceAsString();
-        exit;
-      }
-    } 
-    else {
-      $message = 'a problem occured in image uploading.';
+      echo $ex->getMessage();
+      echo $ex->getTraceAsString();
+      exit;
     }
-
-//  header("Location:congratulation.php?goto_page=patients.php&message=$message");
   header("Location:congratulation.php?goto_page=list_patients.php&message=$message");
   exit;
 }
 
 
-
+// This function to load all patients from patient_examen on the database 
 try {
-
 $query = "SELECT `id`, `patient_name`, `diachi`, 
 `cmnd`, date_format(`visit_date`, '%d %b %Y') as `visit_date`, 
 `phone_number`, `gender` 
@@ -102,6 +93,7 @@ FROM `patient_examen` order by `patient_name` asc;";
   exit;
 }
 
+$list_patients = getPatientHistory($con);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -136,7 +128,7 @@ include './config/sidebar.php';?>
     <!-- Main content -->
     <section class="content">
 
-      <!-- 
+      <!-- Default box -->
      <div class="card card-outline card-primary rounded-0 shadow">
         <div class="card-header">
           <h3 class="card-title">Thêm bệnh nhân mới</h3>
@@ -148,17 +140,18 @@ include './config/sidebar.php';?>
             
           </div>
         </div>
+
         <div class="card-body">
           <form method="post" enctype="multipart/form-data" >
             <div class="row">
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-              <label>Tên bệnh nhân</label>
-              <input type="text" id="patient_name" name="patient_name" required="required"
-                class="form-control form-control-sm rounded-0"/>
+                <label>Tên bệnh nhân</label>
+                <input type="text" id="patient_name" name="patient" list="patientList" required="required"
+                  class="form-control form-control-sm rounded-0"/>
+                  <datalist id="patientList">
+                    <?php echo $list_patients; ?>
+                  </datalist>
               </div>
-              <br>
-              <br>
-              <br>
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>Địa chỉ</label> 
                 <input type="text" id="diachi" name="diachi" 
@@ -169,23 +162,13 @@ include './config/sidebar.php';?>
                 <input type="text" id="cmnd" name="cmnd" 
                 class="form-control form-control-sm rounded-0"/>
               </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                <div class="form-group">
-                  <label>Ngày sinh</label>
-                    <div class="input-group date" 
-                    id="date_of_birth" 
-                    data-target-input="nearest">
-                        <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" data-target="#date_of_birth" 
-                        name="date_of_birth" data-toggle="datetimepicker" autocomplete="off" />
-                        <div class="input-group-append" 
-                        data-target="#date_of_birth" 
-                        data-toggle="datetimepicker">
-                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                        </div>
-                    </div>
-                </div>
-              </div>
               
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <label>Tuổi</label>
+                <input type="text" id="tuoi" name="tuoi" 
+                class="form-control form-control-sm rounded-0"/>
+              </div>
+
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <div class="form-group">
                   <label>Ngày khám</label>
@@ -193,14 +176,14 @@ include './config/sidebar.php';?>
                     id="visit_date" 
                     data-target-input="nearest">
                         <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" data-target="#visit_date" 
-                        name="visit_date"  data-toggle="datetimepicker" autocomplete="off"/>
+                        name="visit_date" data-toggle="datetimepicker" autocomplete="off" />
                         <div class="input-group-append" 
                         data-target="#visit_date" 
                         data-toggle="datetimepicker">
-                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                         </div>
                     </div>
-                  </div>
+                </div>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
@@ -217,6 +200,8 @@ include './config/sidebar.php';?>
               </div>
               <div class="clearfix">&nbsp;</div>
 
+
+              <!-- FILL THE FORM FROM HERE -->
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">3. Chẩn đoán:</label>
                 <input id="chandoan"  name="chandoan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
@@ -341,14 +326,14 @@ include './config/sidebar.php';?>
         </div>
         
       </div>
-     
+      
     </section>
 
      <br/>
      <br/>
      <br/>
- Default box -->
- <section class="content">
+
+    <section class="content">
       <!-- Default box -->
       <div class="card card-outline card-primary rounded-0 shadow">
         <div class="card-header">
@@ -358,7 +343,6 @@ include './config/sidebar.php';?>
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
               <i class="fas fa-minus"></i>
             </button>
-            
           </div>
         </div>
         <div class="card-body">
@@ -382,43 +366,39 @@ include './config/sidebar.php';?>
 
                 <tbody>
                   <?php 
-                  $count = 0;
-                  while($row =$stmtPatient1->fetch(PDO::FETCH_ASSOC)){
-                    $count++;
-                  ?>
-                  <tr>
-                    <td><?php echo $count; ?></td>
-                    <td><?php echo $row['patient_name'];?></td>
-                    <td><?php echo $row['diachi'];?></td>
-                    <td><?php echo $row['cmnd'];?></td>
-                    <td><?php echo $row['visit_date'];?></td>
-                    <td><?php echo $row['phone_number'];?></td>
-                    <td><?php echo $row['gender'];?></td>
-                    <td>
-                      <a href="patient_detail.php?id=<?php echo $row['id'];?>" class = "btn btn-primary btn-sm btn-flat">
-                      <i class="fa fa-edit"></i>
-                      </a>
-                    </td>
-                   
-                  </tr>
-                <?php
-                }
-                ?>
+                    $count = 0;
+                    while($row =$stmtPatient1->fetch(PDO::FETCH_ASSOC)){
+                      $count++;
+                    ?>
+                    <tr>
+                      <td><?php echo $count; ?></td>
+                      <td><?php echo $row['patient_name'];?></td>
+                      <td><?php echo $row['diachi'];?></td>
+                      <td><?php echo $row['cmnd'];?></td>
+                      <td><?php echo $row['visit_date'];?></td>
+                      <td><?php echo $row['phone_number'];?></td>
+                      <td><?php echo $row['gender'];?></td>
+                      <td>
+                        <a href="patient_detail.php?id=<?php echo $row['id'];?>" class = "btn btn-primary btn-sm btn-flat">
+                        <i class="fa fa-edit"></i>
+                        </a>
+                      </td>
+                    
+                    </tr>
+                  <?php
+                }?>
                 </tbody>
               </table>
             </div>
-        </div>
-     
+          </div>
         <!-- /.card-footer-->
-      </div>
+       </div>
       <!-- /.card -->
-
-   
-    </section>
-  </div>
-    <!-- /.content -->
-  
-  <!-- /.content-wrapper -->
+     </section>
+    </div>
+      <!-- /.content -->
+    
+    <!-- /.content-wrapper -->
 <?php 
  include './config/footer.php';
 
@@ -439,7 +419,7 @@ include './config/sidebar.php';?>
 <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 
 <script>
-  showMenuSelected("#mnu_patients", "#mi_list_patients");
+  showMenuSelected("#mnu_patients", "#mi_add_patient");
 
   var message = '<?php echo $message;?>';
 
@@ -480,6 +460,42 @@ function previewImage() {
 }
 </script>
 
+<script>
+  var patientInput = document.getElementById("patient_name");
+  var patientList = document.getElementById("patientList");
+  var diachiInput = document.getElementById("diachi");
+  var cmndInput = document.getElementById("cmnd");
+  var genderInput = document.getElementById("gender");
+  var phone_numberInput = document.getElementById("phone_number");
+  var tuoiInput = document.getElementById("tuoi");
 
+  var options = Array.from(patientList.options).map(function(option) {
+    return option.value.toLowerCase(); // Get the lowercase value instead of textContent
+  });
+
+  patientInput.addEventListener("input", function() {
+    var enteredText = patientInput.value.toLowerCase();
+    var matchIndex = options.findIndex(function(option) {
+      return option.includes(enteredText);
+    });
+
+    if (matchIndex !== -1) {
+      var selectedOption = patientList.options[matchIndex];
+      selectedOption.selected = true; // Select the matching option
+      var diachiValue = selectedOption.getAttribute("diachi");
+      diachiInput.value = diachiValue;
+      var cmndValue = selectedOption.getAttribute("cmnd");
+      cmndInput.value = cmndValue;
+      var genderValue = selectedOption.getAttribute("gender");
+      genderInput.value = genderValue;
+      var phone_numberValue = selectedOption.getAttribute("phone_number");
+      phone_numberInput.value = phone_numberValue;
+      var tuoiValue = selectedOption.getAttribute("tuoi");
+      tuoiInput.value = tuoiValue;
+    } else {
+      diachiInput.value = "none";
+    }
+  });
+</script>
 </body>
 </html>

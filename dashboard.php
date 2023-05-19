@@ -7,19 +7,19 @@ include './config/connection.php';
   $month =  date('m');
 
   $queryToday = "SELECT count(*) as `today` 
-  from `patient_visits` 
+  from `patient_examen` 
   where `visit_date` = '$date';";
 
   $queryWeek = "SELECT count(*) as `week` 
-  from `patient_visits` 
+  from `patient_examen` 
   where YEARWEEK(`visit_date`) = YEARWEEK('$date');";
 
   $queryYear = "SELECT count(*) as `year` 
-  from `patient_visits` 
+  from `patient_examen` 
   where YEAR(`visit_date`) = YEAR('$date');";
 
   $queryMonth = "SELECT count(*) as `month` 
-  from `patient_visits` 
+  from `patient_examen` 
   where YEAR(`visit_date`) = $year and 
   MONTH(`visit_date`) = $month;";
 

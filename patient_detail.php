@@ -8,27 +8,24 @@ if (isset($_POST['save_Patient'])) {
     $hiddenId = $_POST['hidden_id'];
 
     $patientName = trim($_POST['patient_name']);
-    $address = trim($_POST['address']);
-    $cnic = trim($_POST['cnic']);
-    
-    $dateBirth = trim($_POST['date_of_birth']);
-    $dateArr = explode("/", $dateBirth);
-
-    $dateBirth = $dateArr[2].'-'.$dateArr[0].'-'.$dateArr[1];
-
-    $phoneNumber = trim($_POST['phone_number']);
-
     $patientName = ucwords(strtolower($patientName));
+    $address = trim($_POST['address']);
     $address = ucwords(strtolower($address));
+    $cmnd = trim($_POST['cmnd']);
+    $phoneNumber = trim($_POST['phone_number']);
+    
+    $visit_date = trim($_POST['visit_date']);
+    $dateArr = explode("/", $visit_date);
+    $visit_date = $dateArr[2].'-'.$dateArr[0].'-'.$dateArr[1];
 
     $gender = $_POST['gender'];
-    if ($patientName != '' && $address != '' && 
-        $cnic != '' && $dateBirth != '' && $phoneNumber != '' && $gender != '') {
+
+    if ($patientName != '') {
           $query = "update `patients` 
         set `patient_name` = '$patientName', 
         `address` = '$address', 
-        `cnic` = '$cnic', 
-        `date_of_birth` = '$dateBirth', 
+        `cmnd` = '$cmnd', 
+        `visit_date` = '$visit_date', 
         `phone_number` = '$phoneNumber', 
         `gender` = '$gender' 
         where `id` = $hiddenId;";
@@ -60,11 +57,10 @@ if (isset($_POST['save_Patient'])) {
 try {
 $id = $_GET['id'];
 $query = "SELECT `id`, `patient_name`, `diachi`, 
-`cmnd`, date_format(`date_of_birth`, '%m/%d/%Y') as `date_of_birth`,  `phone_number`, `gender` ,
-`visit_date`, `weight`, `patient_diagnostic_id`, `chandoan`, `lamsang`, `gan`,
-								  `duongmat`, `ongmatchu`, `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
-								  `bangquang`, `tuicung`, `tucung`, `buongtrungtrai`, `buongtrungphai`, `ghinhankhac`, `hinhanhsieuam`,
-								  `ketluan`
+`cmnd`, date_format(`visit_date`, '%m/%d/%Y') as `visit_date`,  `phone_number`, `gender`, `weight`, `patient_diagnostic_id`, `chandoan`, `lamsang`, `gan`,
+`duongmat`, `ongmatchu`, `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
+`bangquang`, `tuicung`, `tucung`, `buongtrungtrai`, `buongtrungphai`, `ghinhankhac`, `hinhanhsieuam`,
+`ketluan`
 FROM `patient_examen` where `id` = $id;";
 
   $stmtPatient1 = $con->prepare($query);
@@ -72,7 +68,7 @@ FROM `patient_examen` where `id` = $id;";
   $row = $stmtPatient1->fetch(PDO::FETCH_ASSOC);
 
   $gender = $row['gender'];
-  $dob = $row['date_of_birth']; 
+  $dob = $row['visit_date']; 
 } catch(PDOException $ex) {
 
   echo $ex->getMessage();
@@ -150,17 +146,18 @@ include './config/sidebar.php';?>
                 <input type="text" id="cmnd" name="cmnd" required="required"
                 class="form-control form-control-sm rounded-0" value="<?php echo $row['cmnd'];?>" />
               </div>
-              <!-- $date_of_birth -->
+              <!-- $visit_date -->
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <div class="form-group">
-                  <label>Ngày sinh</label>
+                  <label>Ngày khám</label>
                     <div class="input-group date" 
-                    id="date_of_birth" 
+                    id="visit_date" 
                     data-target-input="nearest">
-                        <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" data-target="#date_of_birth" name="date_of_birth" 
+                        <input type="text" class="form-control form-control-sm rounded-0 datetimepicker-input" 
+                                data-target="#visit_date" name="visit_date" 
                         value="<?php echo $dob;?>" />
                         <div class="input-group-append" 
-                        data-target="#date_of_birth" 
+                        data-target="#visit_date" 
                         data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                         </div>
@@ -181,7 +178,7 @@ include './config/sidebar.php';?>
                   <?php echo getGender($gender);?>
                   </select>
               </div>
-              <!-- FILL THE EXAMEN-->
+
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">3. Chẩn đoán:</label>
                 <input id="chandoan" required="required" name="chandoan" 
@@ -301,8 +298,10 @@ include './config/sidebar.php';?>
               </div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
-                <label style="display: inline-block; margin-right: 10px;">HÌNH ẢNH SIÊU ÂM:</label>
-                <img src="anhsieuam/<?php echo $row['hinhanhsieuam'];?>">
+                <label style="display: block; margin-right: 10px;">HÌNH ẢNH SIÊU ÂM:</label>
+                <div style="text-align: center;">
+                  <img src="anhsieuam/<?php echo $row['hinhanhsieuam'];?>" style="max-width: 100%; max-height: 600px;">
+                </div>
               </div>
 
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
@@ -357,7 +356,7 @@ include './config/sidebar.php';?>
   if(message !== '') {
     showCustomMessage(message);
   }
-  $('#date_of_birth').datetimepicker({
+  $('#visit_date').datetimepicker({
         format: 'L'
     });
       
