@@ -46,5 +46,5 @@ ALTER TABLE `patient_examen`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patient_examen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
   

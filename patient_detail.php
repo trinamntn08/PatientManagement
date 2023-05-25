@@ -118,9 +118,14 @@ include './config/sidebar.php';?>
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
               <i class="fas fa-minus"></i>
             </button>
-            
+          </div>
+          
+          <div class="col-md-2">
+            <label>&nbsp;</label>
+            <button type="button" id="print_PatientExamen" class="btn btn-primary btn-sm btn-flat btn-block">In</button>
           </div>
         </div>
+
         <div class="card-body">
           <form method="post">
             <input type="hidden" name="hidden_id" 
@@ -131,16 +136,14 @@ include './config/sidebar.php';?>
               <input type="text" id="patient_name" name="patient_name" required="required"
                 class="form-control form-control-sm rounded-0" value="<?php echo $row['patient_name'];?>" />
               </div>
-              <br>
-              <br>
-              <br>
+
               <!-- $Address -->
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>Địa chỉ</label> 
                 <input type="text" id="diachi" name="diachi" required="required"
                 class="form-control form-control-sm rounded-0" value="<?php echo $row['diachi'];?>" />
               </div>
-              <!-- $CNIC -->
+              <!-- $CMND -->
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>CMND</label>
                 <input type="text" id="cmnd" name="cmnd" required="required"
@@ -418,6 +421,26 @@ function previewImage() {
     preview.style.display = 'none';
   }
 }
+</script>
+<?php include './config/site_js_links.php' ?>
+
+<script src="plugins/moment/moment.min.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
+<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $("#print_PatientExamen").click(function() {
+      var patientId =$("#id").val();
+      var win = window.open("print_patients_examen.php?from="+patientId);
+      if(win) {
+        win.focus();
+      } else {
+        showCustomMessage('Please allow popups.');
+      }
+    });
+});
+
 </script>
 </body>
 </html>

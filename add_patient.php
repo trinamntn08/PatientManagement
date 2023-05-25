@@ -43,11 +43,31 @@ if (isset($_POST['save_Patient'])) {
     $targetFile =  time().$baseName;
     $status = move_uploaded_file($_FILES["hinhanhsieuam"]["tmp_name"], 'anhsieuam/'.$targetFile);
     $hinhanhsieuam = $targetFile;
+
+    /* Check if the patient already exists
+    $existingPatientQuery = "SELECT `id` FROM `patient_examen` WHERE `patient_name` = :patient_name AND `phone_number` = :phone_number";
+    $existingPatientStmt = $con->prepare($existingPatientQuery);
+    $existingPatientStmt->bindParam(':patient_name', $patientName);
+    $existingPatientStmt->bindParam(':phone_number', $phoneNumber);
+    $existingPatientStmt->bindParam(':diachi', $diachi);
+    $existingPatientStmt->execute();
+    $existingPatientId = $existingPatientStmt->fetchColumn();
+
+    if ($existingPatientId) {
+      // Patient already exists, use the existing ID
+      $patientId = $existingPatientId;
+    } 
+    else 
+    {
+      // Get the last inserted ID
+      $patientId = $con->lastInsertId();
+    }
+    */
     try {
 
       $con->beginTransaction();
 
-      $query = "INSERT INTO `patient_examen`(`patient_name`, 
+      $query = "INSERT INTO `patient_examen`(`patient_name`,
       `diachi`, `cmnd`,`tuoi`,  `visit_date`,`phone_number`, `gender`,
       `chandoan`, `lamsang`, `gan`, `duongmat`, `ongmatchu`,
       `tuimat`, `thantrai`, `thanphai`, `tuy`, `lach`,
@@ -144,9 +164,10 @@ include './config/sidebar.php';?>
         <div class="card-body">
           <form method="post" enctype="multipart/form-data" >
             <div class="row">
+
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <label>Tên bệnh nhân</label>
-                <input type="text" id="patient_name" name="patient" list="patientList" required="required"
+                <input type="text" id="patient_name" name="patient_name" list="patientList" required="required"
                   class="form-control form-control-sm rounded-0"/>
                   <datalist id="patientList">
                     <?php echo $list_patients; ?>
@@ -170,6 +191,20 @@ include './config/sidebar.php';?>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+                <label>Số điện thoại</label>
+                <input type="text" id="phone_number" name="phone_number"
+                class="form-control form-control-sm rounded-0"/>
+              </div>
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
+              <label>Giới tính </label>
+                <select class="form-control form-control-sm rounded-0" id="gender" 
+                name="gender">
+                  <?php echo getGender();?>
+                </select>
+              </div>
+              <div class="clearfix">&nbsp;</div>
+
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
                 <div class="form-group">
                   <label>Ngày khám</label>
                     <div class="input-group date" 
@@ -186,22 +221,7 @@ include './config/sidebar.php';?>
                 </div>
               </div>
 
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-                <label>Số điện thoại</label>
-                <input type="text" id="phone_number" name="phone_number"
-                class="form-control form-control-sm rounded-0"/>
-              </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
-              <label>Giới tính </label>
-                <select class="form-control form-control-sm rounded-0" id="gender" 
-                name="gender">
-                  <?php echo getGender();?>
-                </select>
-              </div>
-              <div class="clearfix">&nbsp;</div>
-
-
-              <!-- FILL THE FORM FROM HERE -->
+              <!-- FILL THE EXAMEN'S FORM FROM HERE -->
               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
                 <label style="display: inline-block; margin-right: 10px;">3. Chẩn đoán:</label>
                 <input id="chandoan"  name="chandoan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
@@ -312,11 +332,23 @@ include './config/sidebar.php';?>
                 <input id="ketluan"  name="ketluan" class="form-control form-control-sm rounded-0" style="display: inline-block; width: 70%;" />
               </div>
               <div class="clearfix">&nbsp;</div>
+
+              <!-- New field  + Button to add new information
+               <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <div id="dynamicFieldsContainer">
+                </div>
+              </div>
+              <div class="clearfix">&nbsp;</div>
+              
+              <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                <button type="submit" id="addNewInfo" 
+                  name="addNewInfo" class="btn btn-primary btn-sm ">Thêm thông tin</button>
+              </div>
+              -->
             </div>
 
-              <div class="row">
-                <div class="col-lg-11 col-md-10 col-sm-10 xs-hidden">&nbsp;</div>
-
+            <div class="row">
+              <div class="col-lg-11 col-md-10 col-sm-10 xs-hidden">&nbsp; </div>
               <div class="col-lg-1 col-md-2 col-sm-2 col-xs-12">
                 <button type="submit" id="save_Patient" 
                 name="save_Patient" class="btn btn-primary btn-sm btn-flat btn-block">Lưu</button>
@@ -356,10 +388,10 @@ include './config/sidebar.php';?>
                     <th>Stt</th>
                     <th>Tên bệnh nhân</th>
                     <th>Địa chỉ</th>
-                    <th>CMND</th>
-                    <th>Ngày khám</th>
                     <th>Số điện thoại</th>
                     <th>Giới tính</th>
+                    <th>CMND</th>
+                    <th>Ngày khám</th>
                     <th>Chi tiết</th>
                   </tr>
                 </thead>
@@ -374,10 +406,10 @@ include './config/sidebar.php';?>
                       <td><?php echo $count; ?></td>
                       <td><?php echo $row['patient_name'];?></td>
                       <td><?php echo $row['diachi'];?></td>
-                      <td><?php echo $row['cmnd'];?></td>
-                      <td><?php echo $row['visit_date'];?></td>
                       <td><?php echo $row['phone_number'];?></td>
                       <td><?php echo $row['gender'];?></td>
+                      <td><?php echo $row['cmnd'];?></td>
+                      <td><?php echo $row['visit_date'];?></td>
                       <td>
                         <a href="patient_detail.php?id=<?php echo $row['id'];?>" class = "btn btn-primary btn-sm btn-flat">
                         <i class="fa fa-edit"></i>
@@ -460,6 +492,39 @@ function previewImage() {
 }
 </script>
 
+<!--  Code to  -->
+<script>
+  // Counter to keep track of the number of new fields created
+  var fieldCounter = 1;
+
+  // Function to create new fields dynamically
+  function createNewFields() {
+    var container = document.getElementById("dynamicFieldsContainer");
+
+    // Create the new field elements
+    var newFieldLabel = document.createElement("label");
+    newFieldLabel.textContent = "Bổ sung " + fieldCounter + ":";
+
+    var newFieldInput = document.createElement("input");
+    newFieldInput.type = "text";
+    newFieldInput.name = "new_field_" + fieldCounter;
+    newFieldInput.className = "form-control form-control-sm rounded-0";
+
+    // Append the new field elements to the container
+    container.appendChild(newFieldLabel);
+    container.appendChild(newFieldInput);
+
+    // Increment the field counter
+    fieldCounter++;
+  }
+
+  // Attach event listener to the "Add new info" button
+  var addNewInfoButton = document.getElementById("addNewInfo");
+  addNewInfoButton.addEventListener("click", createNewFields);
+</script>
+
+
+<!-- Search in the patient's name to verify with the database -->
 <script>
   var patientInput = document.getElementById("patient_name");
   var patientList = document.getElementById("patientList");
@@ -469,19 +534,30 @@ function previewImage() {
   var phone_numberInput = document.getElementById("phone_number");
   var tuoiInput = document.getElementById("tuoi");
 
-  var options = Array.from(patientList.options).map(function(option) {
-    return option.value.toLowerCase(); // Get the lowercase value instead of textContent
+  /*
+  patientList.addEventListener("change", function() {
+    var selectedOption = patientList.options[patientList.selectedIndex];
+    var diachiValue = selectedOption.getAttribute("diachi");
+    diachiInput.value = diachiValue;
+    var cmndValue = selectedOption.getAttribute("cmnd");
+    cmndInput.value = cmndValue;
+    var genderValue = selectedOption.getAttribute("gender");
+    genderInput.value = genderValue;
+    var phone_numberValue = selectedOption.getAttribute("phone_number");
+    phone_numberInput.value = phone_numberValue;
+    var tuoiValue = selectedOption.getAttribute("tuoi");
+    tuoiInput.value = tuoiValue;
   });
-
-  patientInput.addEventListener("input", function() {
+*/
+  patientInput.addEventListener("change", function() {
     var enteredText = patientInput.value.toLowerCase();
-    var matchIndex = options.findIndex(function(option) {
-      return option.includes(enteredText);
+    var matchIndex = Array.from(patientList.options).findIndex(function(option) {
+      return option.value.toLowerCase().includes(enteredText);
     });
 
     if (matchIndex !== -1) {
+      patientList.selectedIndex = matchIndex;
       var selectedOption = patientList.options[matchIndex];
-      selectedOption.selected = true; // Select the matching option
       var diachiValue = selectedOption.getAttribute("diachi");
       diachiInput.value = diachiValue;
       var cmndValue = selectedOption.getAttribute("cmnd");
@@ -493,7 +569,11 @@ function previewImage() {
       var tuoiValue = selectedOption.getAttribute("tuoi");
       tuoiInput.value = tuoiValue;
     } else {
-      diachiInput.value = "none";
+      diachiInput.value = "";
+      cmndInput.value = "";
+      genderInput.value = "";
+      phone_numberInput.value = "";
+      tuoiInput.value = "";
     }
   });
 </script>
