@@ -2,6 +2,7 @@
 include './config/connection.php';
 include './common_service/common_functions.php';
 $patients = getPatients($con);
+
 $message = '';
 if (isset($_POST['save_Patient'])) {
   
@@ -128,8 +129,7 @@ include './config/sidebar.php';?>
 
         <div class="card-body">
           <form method="post">
-            <input type="hidden" name="hidden_id" 
-            value="<?php echo $row['id'];?>">
+          <!--  <input type="hidden" name="hidden_id" value="<?php echo $row['id'];?>"> -->
             <div class="row">
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-10">
               <label>Tên bệnh nhân</label>
@@ -431,8 +431,9 @@ function previewImage() {
 <script>
   $(document).ready(function() {
     $("#print_PatientExamen").click(function() {
-      var patientId =$("#id").val();
-      var win = window.open("print_patients_examen.php?from="+patientId);
+    //  var patientId =$("#patient_name").val();
+      var patientId = "<?php echo $row['id'];?>";
+      var win = window.open("print_patients_examen.php?patientId="+patientId);
       if(win) {
         win.focus();
       } else {

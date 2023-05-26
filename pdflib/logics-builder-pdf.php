@@ -3,6 +3,7 @@ define("_SYSTEM_TTFONTS", "../font/unifont");
 require('fpdf182/tfpdf.php');
 require('fpdf182/fpdf.php');
 
+//OLD ONE DON'T USE IT
 class LB_PDF extends FPDF  {
 
     const COL_HDR_COLOR = 100;
@@ -496,7 +497,7 @@ class LB_tPDF extends tFPDF  {
             // Times bold 13
             $this->SetFont('', '', self::HEADING_SIZE);
             // Title
-            $this->Cell(0, 7, 'Patient Management System', 0, 0, 'C');
+            $this->Cell(0, 10, 'SIÊU ÂM TỔNG QUÁT', 0, 0, 'C');
             $this->Ln();
             $this->Cell(0, 7, $this->reportTitle, 0, 0, 'C');
             $this->Ln();

@@ -61,7 +61,7 @@ if(!(isset($_SESSION['user_id']))) {
                   <p>Lịch sử thăm khám</p>
               </a>
           </li>
-
+        <!--  HIDE FROM HERE 
           <li class="nav-item" id="mnu_patients">
             <a href="patient_history.php" class="nav-link">
               <i class="nav-icon fas fa-user-injured"></i>
@@ -162,6 +162,7 @@ if(!(isset($_SESSION['user_id']))) {
               
             </ul>
           </li> 
+          -->
           <li class="nav-item" id="mnu_users">
             <a href="users.php" class="nav-link">
               <i class="nav-icon fa fa-users"></i>
