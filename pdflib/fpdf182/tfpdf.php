@@ -381,6 +381,7 @@ function PageNo()
 function SetDrawColor($r, $g=null, $b=null)
 {
 	// Set color for all stroking operations
+	
 	if(($r==0 && $g==0 && $b==0) || $g===null)
 		$this->DrawColor = sprintf('%.3F G',$r/255);
 	else
@@ -445,8 +446,8 @@ function SetLineWidth($width)
 
 function Line($x1, $y1, $x2, $y2)
 {
-	// Draw a line
-	$this->_out(sprintf('%.2F %.2F m %.2F %.2F l S',$x1*$this->k,($this->h-$y1)*$this->k,$x2*$this->k,($this->h-$y2)*$this->k));
+    // Draw a line
+    $this->_out(sprintf('%.2F %.2F m %.2F %.2F l S',$x1*$this->k,($this->h-$y1)*$this->k,$x2*$this->k,($this->h-$y1)*$this->k));
 }
 
 function Rect($x, $y, $w, $h, $style='')
