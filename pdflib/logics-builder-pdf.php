@@ -365,9 +365,12 @@ class LB_tPDF extends tFPDF  {
         $this->toDate = $toDate;
         $this->isFooterRequired = $isFooterRequired;
      //   $this->resetTableHeaders();
-        $this->AddFont('DejaVu', '', 'DejaVuSansCondensed.ttf', true);
+    //  $this->AddFont('DejaVu', '', 'DejaVuSerifCondensed-Bold.ttf', true);
+     //   $this->AddFont('DejaVu', '', 'DejaVuSerifCondensed.ttf', true);
      //   $this->SetFont('Times', '', self::BODY_SIZE);
-        $this->SetFont('DejaVu', '', self::BODY_SIZE);
+        $this->AddFont('DejaVu','','DejaVuSerifCondensed.ttf',true);
+        $this->AddFont('DejaVu', 'B', 'DejaVuSans-Bold.ttf',true);
+        $this->SetFont('DejaVu','',10);
 
         $this->SetLineWidth(0.3);
         $this->SetDrawColor(0);
